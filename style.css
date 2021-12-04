@@ -1,0 +1,55 @@
+@import url("https://fonts.googleapis.com/css2?family=Courier+Prime&display=swap");
+* {
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  font-family: 'Courier Prime', monospace;
+}
+
+body {
+  background-color: #1a1919;
+  color: #1ee822;
+}
+
+.message {
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.message__prefix {
+  background-color: #1ee822;
+  color: #000;
+  padding: .25em 1.15em .25em .5em;
+  -webkit-clip-path: polygon(75% 0%, 100% 50%, 75% 100%, 0% 100%, 0 50%, 0% 0%);
+          clip-path: polygon(75% 0%, 100% 50%, 75% 100%, 0% 100%, 0 50%, 0% 0%);
+}
+
+.message__input {
+  width: 100%;
+  resize: none;
+  outline: none;
+  border: none;
+  background-color: transparent;
+  color: #1ee822;
+  padding: .33em;
+}
+
+.tag {
+  font-weight: bold;
+  margin-right: .75em;
+}
+
+.chat-box {
+  width: 100%;
+  height: calc(100vh - 37px);
+  padding: .33em;
+}
+/*# sourceMappingURL=style.css.map */

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Real-Time Chat Room</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="messages" class="chat-box"></div>
+    <div class="message">
+        <span class="message__prefix">Unknown</span>
+        <input type="text" class="message__input" id="message" autofocus />
+    </div>
+
+    <script>
+        (() => {
+            const messageInput = document.querySelector('#message')
+            const messagePrefix = document.querySelector('.message__prefix')
+            const messagesBox = document.querySelector('#messages')
+
+            const showMessages = (user, message) => {
+                messages.innerHTML += `<br><span class="tag">${user}: </span> ${message}`
+                messages.scrollTop = messages.scrollHeight
+                messageInput.value = ''
+            }
+
+            let ws
+
+            const init = username => {
+                if (ws) {
+                    ws.onerror = ws.onopen = ws.onclose = null
+                    ws.close()
+                } 
+
+                ws = new WebSocket(`ws://localhost:6969/?user=${username}`) 
+
+                ws.onopen = () => {
+                    messages.innerHTML += `
+                    --------------------------------------<br>
+                    Welcome to the chat room ${username}.
+                    <br>--------------------------------------` 
+                }
+
+                ws.onmessage = message => {
+                    const res = JSON.parse(message['data'])
+
+                    console.log(res)
+
+                    let messageArr = res.data.data
+                    let user = res.user
+                    let text = ''
+
+                    messageArr.forEach(element => {
+                        text += String.fromCharCode(element);
+                    })
+
+                    showMessages(user, text)
+                }
+
+
+                ws.onclose = () => {
+                    ws.close()
+                    ws = null
+                }
+            }
+
+            let localUser = prompt('Set your username', '')
+            if (localUser !== null) {
+                init(localUser)
+                messagePrefix.innerHTML = localUser
+            }
+
+            // Send data by pressing enter
+            messageInput.addEventListener('keyup', e => {
+                if (e.keyCode === 13) {
+                    if (!ws) return
+
+                    ws.send(messageInput.value)
+                    showMessages(localUser, messageInput.value)
+                }
+            })
+
+            // Don't let user to focusout of the input
+            messageInput.addEventListener('focusout', () => messageInput.focus())
+        })()
+    </script>
+</body>
+</html>
