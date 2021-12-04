@@ -28,16 +28,10 @@
 
         ws.onmessage = message => {
             const res = JSON.parse(message['data'])
-
             console.log(res)
 
-            let messageArr = res.data.data
+            let text = res.data
             let user = res.user
-            let text = ''
-
-            messageArr.forEach(element => {
-                text += String.fromCharCode(element);
-            })
 
             showMessages(user, text)
         }

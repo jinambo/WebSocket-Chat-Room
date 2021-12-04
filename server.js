@@ -5,23 +5,48 @@ const url = require('url');
 const port = 6969
 const wss = new WebSocket.Server({ port })
 
+const getString = data => {
+    let msgStr = ''
+    data.forEach(element => {
+        msgStr += String.fromCharCode(element);
+    })
+
+    return msgStr
+}
+
 wss.on('connection', (ws, req) => {
     const parameters = url.parse(req.url, true)
     ws.username = parameters.query.user !== null ? parameters.query.user : 'Unknown'
 
     ws.on('message', data => {
-        // Send message to all clients
-        wss.clients.forEach(client => {
-            console.log('Client.Username: ' + client.username);
-            console.log(data)
+        const theMsg = getString(data)
 
-            if (client !== ws && client.readyState === WebSocket.OPEN) {
-                client.send(JSON.stringify({
-                    data: data,
-                    user: ws.username
-                }))
-            }
-        })
+        // Send private message by username
+        if (theMsg.includes('/private')) {
+            const name = theMsg.split(' ')[1]
+            const msg = theMsg.split(' ').slice(2).join(' ')
+
+            wss.clients.forEach(client => {
+                if (client.username == name && client !== ws && client.readyState === WebSocket.OPEN) {
+                    client.send(JSON.stringify({
+                        data: msg,
+                        user: '[Private Message] ' + ws.username
+                    }))
+                }
+            })
+        } else {
+            // Send message to all clients
+            wss.clients.forEach(client => {
+                console.log('Client.Username: ' + client.username);
+
+                if (client !== ws && client.readyState === WebSocket.OPEN) {
+                    client.send(JSON.stringify({
+                        data: theMsg,
+                        user: ws.username
+                    }))
+                }
+            })
+        }
     })
 
     ws.on('close', () => {
